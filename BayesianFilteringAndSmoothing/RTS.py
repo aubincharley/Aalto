@@ -16,7 +16,7 @@ def prediction_RTS(kalman_mean, kalman_cov, Q, q, AR_order, smoothed_mean, smoot
     return mean, cov
 
 
-def RTS_smoother(kalman_means, kalman_covs, q, AR_order, sigma_w2, sigma_a2, n_points):
+def RTS_smoother(kalman_means, kalman_covs, q, AR_order, sigma_w2, sigma_a2, n_points, plot_progress=False):
     Q = np.zeros((AR_order+q, AR_order+q))
     Q[0, 0] = sigma_w2
 
@@ -27,6 +27,11 @@ def RTS_smoother(kalman_means, kalman_covs, q, AR_order, sigma_w2, sigma_a2, n_p
     smoothed_means[-1] = kalman_means[-1]
     smoothed_covs[-1] = kalman_covs[-1]
     for i in range(len(kalman_means)-2, -1, -1):
+        if plot_progress:
+            if i in [k*n_points//10 for k in range(1, 10)]:
+                print(f"----Smoothing: {100-100*i//n_points}%----")
+            elif i == 0:
+                print(f"----Smoothing: 100%----")
         smoothed_means[i], smoothed_covs[i] = prediction_RTS(
             kalman_means[i], kalman_covs[i], Q, q, AR_order, smoothed_means[i+1], smoothed_covs[i+1])
 

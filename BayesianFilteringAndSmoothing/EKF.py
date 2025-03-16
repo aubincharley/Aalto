@@ -145,7 +145,7 @@ def prediction_kalman(mean, cov, Q, H, jac, y, sigma_e2, q, AR_order):
     return mean, cov
 
 
-def Extended_Kalman_Filter(sigma_w2, sigma_a2, sigma_e2, q, AR_order, n_points, y):
+def Extended_Kalman_Filter(sigma_w2, sigma_a2, sigma_e2, q, AR_order, n_points, y, plot_progress=False):
     """Compute the EKF for a given AR process
 
     Args:
@@ -190,6 +190,11 @@ def Extended_Kalman_Filter(sigma_w2, sigma_a2, sigma_e2, q, AR_order, n_points, 
     mean = mean.reshape((AR_order+q, 1))
 
     for i in range(q, n_points):
+        if plot_progress:
+            if i in [k*n_points//10 for k in range(1, 10)]:
+                print(f"----Filtering:{100*i//n_points}%---- ")
+            elif i == n_points-1:
+                print(f"----Filtering:100%---- ")
         Jac = jacobian(mean, AR_order, q)
         mean, cov = prediction_kalman(
             mean, cov, Q, H, Jac, y[i], sigma_e2, q, AR_order)
