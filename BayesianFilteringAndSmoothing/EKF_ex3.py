@@ -1,3 +1,6 @@
+"""Given an observation y, we want to find the AR order of the process that generated the observation.
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 from EKF import *
@@ -39,18 +42,17 @@ for i in range(AR_order, n_points):
 
 y = x + np.random.normal(0, np.sqrt(sigma_e2), n_points)
 
-sigma_e2_est = sigma_e2
-# We increase the variance over the true value to fit the high variations
-sigma_w2_est = sigma_w2*10
+# --------------------This part differs from the ex2-------------------------#
 sigma_a2_est = sigma_a2
-
+sigma_e2_est = sigma_e2
+sigma_w2_est = sigma_w2*10
+AR_order_est = AR_order
+# ---------------------------------------------------------------------------#
 means, covs, all_state_means, all_states_covs = Extended_Kalman_Filter(
-    sigma_w2_est, sigma_a2_est, sigma_e2_est, q, AR_order, n_points, y)
-
+    sigma_w2_est, sigma_a2_est, sigma_e2_est, q, AR_order_est, n_points, y)
 
 smoothed_means, smoothed_covs, filtered_means = RTS_smoother(
     all_state_means, all_states_covs, q, AR_order, sigma_w2, sigma_a2, n_points)
-
 
 mse_kalman = np.mean((means[AR_order:] - x[AR_order:])**2)
 mse_rts = np.mean((filtered_means[AR_order:] - x[AR_order:])**2)
