@@ -165,14 +165,14 @@ def main():
         sigma_e2_est = 0.00001
         sigma_w2_est = 0.000001
         sigma_a2_est = 0.000001
-        AR_order_est = 10
+        AR_order_est = 2
         q = 20
         n_points = len(amplitude_noisy)
 
         means, covs, all_state_means, all_states_covs = Extended_Kalman_Filter(
             sigma_w2_est, sigma_a2_est, sigma_e2_est, q, AR_order_est, n_points, amplitude_noisy, plot_progress=True)
 
-        # smoothed_means, smoothed_covs, means = RTS_smoother(
+        # smoothed_means, smoothed_covs, means,covs = RTS_smoother(
         #     all_state_means, all_states_covs, q, AR_order_est, sigma_w2_est, sigma_a2_est, n_points, plot_progress=True)
 
         ### We keep only the part of the signal that is not noisy ie s>0.000005###

@@ -48,7 +48,7 @@ means, covs, all_state_means, all_states_covs = Extended_Kalman_Filter(
     sigma_w2_est, sigma_a2_est, sigma_e2_est, q, AR_order, n_points, y)
 
 
-smoothed_means, smoothed_covs, filtered_means = RTS_smoother(
+smoothed_means, smoothed_covs, filtered_means, filtered_covs = RTS_smoother(
     all_state_means, all_states_covs, q, AR_order, sigma_w2, sigma_a2, n_points)
 
 

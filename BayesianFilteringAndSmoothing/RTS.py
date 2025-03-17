@@ -3,6 +3,21 @@ from EKF import *
 
 
 def prediction_RTS(kalman_mean, kalman_cov, Q, q, AR_order, smoothed_mean, smoothed_cov):
+    """Compute the prediction step of the RTS smoother.
+
+    Args:
+        kalman_mean (array): current mean of the Kalman filter
+        kalman_cov (array): current covariance of the Kalman filter
+        Q (array): process noise covariance
+        q (int): number of states used for prediction
+        AR_order (int): order of the AR process
+        smoothed_mean (array): previous smoothed mean
+        smoothed_cov (array): previous smoothed covariance
+
+    Returns:
+        array: smoothed mean
+        array: smoothed covariance
+    """
     # print(kalman_mean)
     mat = companion(kalman_mean[q:], q)
     pred_mean = mat@kalman_mean
@@ -17,6 +32,23 @@ def prediction_RTS(kalman_mean, kalman_cov, Q, q, AR_order, smoothed_mean, smoot
 
 
 def RTS_smoother(kalman_means, kalman_covs, q, AR_order, sigma_w2, sigma_a2, n_points, plot_progress=False):
+    """_summary_
+
+    Args:
+        kalman_means (array): means of the Kalman filter
+        kalman_covs (array): covariances of the Kalman filter
+        q (int): number of states used for prediction
+        AR_order (int): order of the AR process
+        sigma_w2 (float): variance of the AR white noise
+        sigma_a2 (float): variance of the AR coefficients
+        n_points (int): number of points
+        plot_progress (bool, optional): Plot the progress if set to True. Defaults to False.
+
+    Returns:
+        array: smoothed means of size n_points,AR_order+q
+        array: smoothed covariances of size n_points,AR_order+q
+        array: smoothed means used for plot of size n_points
+    """
     Q = np.zeros((AR_order+q, AR_order+q))
     Q[0, 0] = sigma_w2
 
@@ -39,4 +71,9 @@ def RTS_smoother(kalman_means, kalman_covs, q, AR_order, sigma_w2, sigma_a2, n_p
     filtered_means[:q] = smoothed_means[:q, 0]
     for i in range(q, n_points):
         filtered_means[i] = smoothed_means[i-q+1, 0]
-    return smoothed_means, smoothed_covs, filtered_means
+    filtered_covs = np.zeros(n_points)
+    filtered_covs[:q] = smoothed_covs[:q, 0, 0]
+    for i in range(q, n_points):
+        filtered_covs[i] = smoothed_covs[i-q+1, 0, 0]
+
+    return smoothed_means, smoothed_covs, filtered_means, filtered_covs

@@ -51,7 +51,7 @@ AR_order_est = AR_order
 means, covs, all_state_means, all_states_covs = Extended_Kalman_Filter(
     sigma_w2_est, sigma_a2_est, sigma_e2_est, q, AR_order_est, n_points, y)
 
-smoothed_means, smoothed_covs, filtered_means = RTS_smoother(
+smoothed_means, smoothed_covs, filtered_means, filtered_covs = RTS_smoother(
     all_state_means, all_states_covs, q, AR_order, sigma_w2, sigma_a2, n_points)
 
 mse_kalman = np.mean((means[AR_order:] - x[AR_order:])**2)
@@ -72,6 +72,8 @@ ax[0].legend()
 
 ax[1].plot(t[AR_order:], means[AR_order:],
            label="Extended Kalman filter", color="green", linewidth=0.7)
+ax[1].fill_between(t[AR_order:], means[AR_order:] - 1.96*np.sqrt(covs[AR_order:]),
+                   means[AR_order:] + 1.96*np.sqrt(covs[AR_order:]), color="green", alpha=0.2)
 ax[1].plot(t[AR_order:], x[AR_order:], label="True signal",
            color="black", linewidth=0.7)
 ax[1].plot(t[AR_order:], y[AR_order:],
@@ -83,6 +85,8 @@ ax[1].set_title("Extended Kalman filter. MSE: {:.2e}".format(mse_kalman))
 
 ax[2].plot(t[AR_order:], filtered_means[AR_order:],
            label="RTS smoother", color="blue", linewidth=0.7)
+ax[2].fill_between(t[AR_order:], filtered_means[AR_order:] - 1.96*np.sqrt(filtered_covs[AR_order:]),
+                   filtered_means[AR_order:] + 1.96*np.sqrt(filtered_covs[AR_order:]), color="blue", alpha=0.2)
 ax[2].plot(t[AR_order:], x[AR_order:], label="True signal",
            color="black", linewidth=0.7)
 ax[2].plot(t[AR_order:], y[AR_order:],
